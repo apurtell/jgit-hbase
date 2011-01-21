@@ -1,0 +1,3 @@
+org.eclipse.jgit.storage.hbase.pgm.HBaseCreateSchema
+org.eclipse.jgit.storage.hbase.pgm.HBaseDaemon
+org.eclipse.jgit.storage.hbase.pgm.HBaseInit

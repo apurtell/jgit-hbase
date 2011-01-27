@@ -1,3 +1,56 @@
+            == Java GIT - HBase storage back end ==
+
+This package is an implementation of the org.eclipse.jgit.storage.dht.spi
+interface, binding JGit's generic DHT storage to HBase.
+
+Compile this package, you may need JGit first:
+
+  (cd ../jgit && mvn clean install)
+  mvn clean package
+
+Create a repository:
+
+  java -jar ./target/jgit-cs.jar \
+    hbase-init \
+    git+hbase://localhost/git_store/test.git
+
+A git+hbase repository URI has the obvious hostname component (here
+"localhost").  The path starts with a the table name (here "git_store"). The
+remainder of the URI path is the repository name ("test.git").
+
+Launch a Git daemon. Supply a repository URI excluding any repository name.
+Then, list all repository names you want served. (For now this is not
+automatically handled during requests, you must specify them in advance.)
+
+Note currently JGit's DHT implementation holds onto the entire pack during
+receive, to implement delta resolution efficiently, so provide enough heap for
+this. 
+
+  java -Xmx2g -jar ./target/jgit-cs.jar hbase-daemon \
+    --enable receive-pack
+    git+hbase://localhost/git_store \
+    jgit.git
+    linux-2.6.git
+
+Push to it:
+
+  git push git://localhost/jgit.git master
+
+Clone from it:
+
+  git clone git://localhost/jgit.git
+
+If the repository is large, consider caching the object list to speed
+up clones:
+
+  java -jar target/jgit-cs.jar \
+    --git-dir git+hbase://localhost/git_store/jgit.git \
+    hbase-cache-object-list
+
+Something as small as JGit with 16,000 objects doesn't really make a
+big difference, but the cached object list is very useful with the
+Linux kernel and its 1.8 million objects.
+
             == Java GIT ==
 
 This package is licensed under the BSD.

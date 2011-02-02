@@ -24,8 +24,8 @@ Import-Package: org.eclipse.jgit.api;version="[0.11.0,0.12.0)",
  org.eclipse.jgit.treewalk;version="[0.11.0,0.12.0)",
  org.eclipse.jgit.treewalk.filter;version="[0.11.0,0.12.0)",
  org.eclipse.jgit.util;version="[0.11.0,0.12.0)",
- org.kohsuke.args4j;version="[2.0.12,2.1.0)",
- org.kohsuke.args4j.spi;version="[2.0.12,2.1.0)"
+ org.kohsuke.args4j;version="[2.0.12,2.1.0)";resolution:=optional,
+ org.kohsuke.args4j.spi;version="[2.0.12,2.1.0)";resolution:=optional
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.jgit.pgm;version="0.11.0";
   uses:="org.eclipse.jgit.lib,

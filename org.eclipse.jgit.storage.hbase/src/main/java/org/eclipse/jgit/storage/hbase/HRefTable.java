@@ -52,24 +52,26 @@ public class HRefTable implements RefTable {
   @Override
   public Map<RefKey, RefData> getAll(Context options, RepositoryKey repository)
       throws DhtException {
-    Map<RefKey, RefData> m = new HashMap<RefKey, RefData>();
     HTableInterface table = db.getTable();
     try {
+      Map<RefKey, RefData> m = new HashMap<RefKey, RefData>();
       Get get = new Get(repository.toBytes());
       get.addFamily(REF_FAMILY);
       Result result = table.get(get);
-      Map<byte[],byte[]> familyMap = result.getFamilyMap(REF_FAMILY);
-      if (familyMap != null) {
-        for (Map.Entry<byte[],byte[]> e: familyMap.entrySet()) {
-          m.put(RefKey.fromBytes(e.getKey()), RefData.fromBytes(e.getValue()));
+      if (result != null && !result.isEmpty()) {
+        Map<byte[],byte[]> familyMap = result.getFamilyMap(REF_FAMILY);
+        if (familyMap != null) {
+          for (Map.Entry<byte[],byte[]> e: familyMap.entrySet()) {
+            m.put(RefKey.fromBytes(e.getKey()), RefData.fromBytes(e.getValue()));
+          }
         }
       }
+      return m;
     } catch (IOException e) {
       throw new DhtException(e);
     } finally {
       db.putTable(table);
     }
-    return m;
   }
 
   @Override

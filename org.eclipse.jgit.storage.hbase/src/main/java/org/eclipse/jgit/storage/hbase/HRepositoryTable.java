@@ -58,13 +58,15 @@ public class HRepositoryTable implements RepositoryTable {
       throws DhtException, TimeoutException {
     HTableInterface table = db.getTable();
     try {
+      List<ObjectListInfo> info = new ArrayList<ObjectListInfo>();
       Result result = 
         table.get(new Get(repo.toBytes()).addFamily(REPOSITORY_FAMILY));
-      List<ObjectListInfo> info = new ArrayList<ObjectListInfo>();
-      List<KeyValue> kvs = result.list();
-      for (KeyValue kv: kvs) {
-        if (Bytes.startsWith(kv.getQualifier(), LIST_INFO)) {
-          info.add(ObjectListInfo.fromBytes(repo, kv.getValue()));
+      if (result != null && !result.isEmpty()) {
+        List<KeyValue> kvs = result.list();
+        for (KeyValue kv: kvs) {
+          if (Bytes.startsWith(kv.getQualifier(), LIST_INFO)) {
+            info.add(ObjectListInfo.fromBytes(repo, kv.getValue()));
+          }
         }
       }
       return info;

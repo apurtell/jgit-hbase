@@ -57,8 +57,7 @@ public class HObjectListTable implements ObjectListTable {
       public void run() {
         List<Get> gets = new ArrayList<Get>();
         for (ObjectListChunkKey key: objects) {
-          gets.add(new Get(key.toBytes())
-            .addColumn(OBJECT_LIST_FAMILY, CHUNK));
+          gets.add(new Get(key.toBytes()).addFamily(OBJECT_LIST_FAMILY));
         }
         HTableInterface table = db.getTable();
         try {
@@ -74,10 +73,12 @@ public class HObjectListTable implements ObjectListTable {
         List<ObjectListChunk> objects =
           new ArrayList<ObjectListChunk>(results.length);
         for (Result result: results) {
+          assert(result != null);
           ObjectListChunkKey key =
             ObjectListChunkKey.fromBytes(result.getRow());
-          objects.add(ObjectListChunk.fromBytes(key, 
-            result.getValue(OBJECT_LIST_FAMILY, CHUNK)));
+          byte[] value = result.getValue(OBJECT_LIST_FAMILY, CHUNK);
+          assert(value != null);
+          objects.add(ObjectListChunk.fromBytes(key, value));
         }
         return objects;
       }

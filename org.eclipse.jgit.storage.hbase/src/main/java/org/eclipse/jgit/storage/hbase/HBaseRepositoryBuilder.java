@@ -74,6 +74,9 @@ public class HBaseRepositoryBuilder
     if (path.startsWith("/"))
       path = path.substring(1);
     int endTableName = path.indexOf('/');
+    if (endTableName == -1) {
+      throw new IllegalArgumentException();
+    }
     setTableName(path.substring(0, endTableName));
     setRepositoryName(path.substring(endTableName + 1));
     return this;

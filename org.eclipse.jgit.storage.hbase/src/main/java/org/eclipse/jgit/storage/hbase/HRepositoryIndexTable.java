@@ -32,8 +32,11 @@ public class HRepositoryIndexTable implements RepositoryIndexTable {
       Result result = 
         table.get(new Get(name.toBytes())
           .addColumn(REPOSITORY_INDEX_FAMILY, ID));
-      return RepositoryKey.fromBytes(
-        result.getValue(REPOSITORY_INDEX_FAMILY, ID));
+      byte[] value = result.getValue(REPOSITORY_INDEX_FAMILY, ID);
+      if (value == null) {
+        return null;
+      }
+      return RepositoryKey.fromBytes(value);
     } catch (IOException e) {
       throw new DhtException(e);
     } finally {

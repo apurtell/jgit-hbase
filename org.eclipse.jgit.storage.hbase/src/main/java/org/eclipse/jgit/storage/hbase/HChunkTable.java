@@ -64,12 +64,7 @@ public class HChunkTable implements ChunkTable {
       public void run() {
         List<Get> gets = new ArrayList<Get>();
         for (ChunkKey key: keys) {
-          gets.add(
-            new Get(key.toBytes())
-              .addColumn(CHUNKS_FAMILY, CHUNK)
-              .addColumn(CHUNKS_FAMILY, INDEX)
-              .addColumn(CHUNKS_FAMILY, FRAGMENTS)
-              .addColumn(CHUNKS_FAMILY, PREFETCH));
+          gets.add(new Get(key.toBytes()).addFamily(CHUNKS_FAMILY));
         }
         HTableInterface table = db.getTable();
         try {
@@ -86,6 +81,7 @@ public class HChunkTable implements ChunkTable {
         Collection<PackChunk.Members> chunks = 
           new ArrayList<PackChunk.Members>(results.length);
         for (Result result: results) {
+          assert(result != null);
           PackChunk.Members m = new PackChunk.Members();
           ChunkKey key = ChunkKey.fromBytes(result.getRow());
           m.setChunkKey(key);

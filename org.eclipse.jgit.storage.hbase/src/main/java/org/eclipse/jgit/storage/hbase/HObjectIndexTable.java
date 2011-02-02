@@ -81,6 +81,7 @@ public class HObjectIndexTable implements ObjectIndexTable {
           new HashMap<ObjectIndexKey, Collection<ObjectInfo>>();
         if (results != null) {
           for (Result result: results) {
+            assert(result != null);
             ObjectIndexKey key = ObjectIndexKey.fromBytes(result.getRow());
             Collection<ObjectInfo> objects = new ArrayList<ObjectInfo>();
             List<KeyValue> kvs = result.list();

@@ -81,7 +81,10 @@ public class HChunkTable implements ChunkTable {
         Collection<PackChunk.Members> chunks = 
           new ArrayList<PackChunk.Members>(results.length);
         for (Result result: results) {
-          assert(result != null);
+          if (result == null) {
+            assert false;
+            continue;
+          }
           PackChunk.Members m = new PackChunk.Members();
           ChunkKey key = ChunkKey.fromBytes(result.getRow());
           m.setChunkKey(key);

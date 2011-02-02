@@ -73,11 +73,20 @@ public class HObjectListTable implements ObjectListTable {
         List<ObjectListChunk> objects =
           new ArrayList<ObjectListChunk>(results.length);
         for (Result result: results) {
-          assert(result != null);
+          if (result == null) {
+            assert false;
+            continue;
+          }
+          if (result.getRow() == null) {
+            continue;
+          }
           ObjectListChunkKey key =
             ObjectListChunkKey.fromBytes(result.getRow());
           byte[] value = result.getValue(OBJECT_LIST_FAMILY, CHUNK);
-          assert(value != null);
+          if (value == null) {
+            assert false;
+            continue;
+          }
           objects.add(ObjectListChunk.fromBytes(key, value));
         }
         return objects;

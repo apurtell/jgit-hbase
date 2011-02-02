@@ -81,10 +81,17 @@ public class HObjectIndexTable implements ObjectIndexTable {
           new HashMap<ObjectIndexKey, Collection<ObjectInfo>>();
         if (results != null) {
           for (Result result: results) {
-            assert(result != null);
+            if (result == null) {
+              assert false;
+              continue;
+            }
+            if (result.getRow() == null) {
+              continue;
+            }
             ObjectIndexKey key = ObjectIndexKey.fromBytes(result.getRow());
             Collection<ObjectInfo> objects = new ArrayList<ObjectInfo>();
             List<KeyValue> kvs = result.list();
+            assert(kvs != null);
             for (KeyValue kv: kvs) {
               objects.add(ObjectInfo.fromBytes(
                 ChunkKey.fromShortBytes(key, kv.getQualifier()),
@@ -104,10 +111,10 @@ public class HObjectIndexTable implements ObjectIndexTable {
       throws DhtException {
     try {
       HWriteBuffer wb = (HWriteBuffer) buffer;
+      ChunkKey key = link.getChunkKey();
       wb.put(
         new Put(objId.toBytes())
-          .add(OBJECT_INDEX_FAMILY, link.getChunkKey().toShortBytes(),
-            link.toBytes()));
+          .add(OBJECT_INDEX_FAMILY, key.toShortBytes(), link.toBytes()));
     } catch (Throwable err) {
       throw new DhtException(err);
     }
@@ -119,10 +126,10 @@ public class HObjectIndexTable implements ObjectIndexTable {
     try {
       HWriteBuffer wb = (HWriteBuffer) buffer;
       wb.delete(new Delete(objId.toBytes()));
+      ChunkKey key = link.getChunkKey();
       wb.put(
         new Put(objId.toBytes())
-          .add(OBJECT_INDEX_FAMILY, link.getChunkKey().toShortBytes(),
-            link.toBytes()));
+          .add(OBJECT_INDEX_FAMILY, key.toShortBytes(), link.toBytes()));
     } catch (Throwable err) {
       throw new DhtException(err);
     }

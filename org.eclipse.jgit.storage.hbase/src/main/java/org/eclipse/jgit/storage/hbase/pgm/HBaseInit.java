@@ -41,9 +41,14 @@ import org.eclipse.jgit.storage.hbase.HRepositoryIndexTable;
 import org.eclipse.jgit.storage.hbase.HRepositoryTable;
 
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 
 @Command(common = true, name="hbase-init")
 class HBaseInit extends TextBuiltin {
+  @Option(name = "--compression", required = false,
+      metaVar = "metaVar_compression", usage = "usage_compression")
+  String compression;
+
   @Argument(index = 0, required = true, metaVar = "git+hbase://")
   String uri;
 
@@ -67,7 +72,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HChunkTable.CHUNKS_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+              HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           false, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,
@@ -75,7 +81,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HObjectIndexTable.OBJECT_INDEX_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+            HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           true, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,
@@ -83,7 +90,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HObjectListTable.OBJECT_LIST_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+            HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           true, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,
@@ -91,7 +99,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HRefTable.REF_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+            HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           true, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,
@@ -99,7 +108,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HRepositoryTable.REPOSITORY_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+            HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           true, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,
@@ -107,7 +117,8 @@ class HBaseInit extends TextBuiltin {
       table.addFamily(new HColumnDescriptor(
           HRepositoryIndexTable.REPOSITORY_INDEX_FAMILY,
           1, // maxVersions,
-          HColumnDescriptor.DEFAULT_COMPRESSION,
+          compression != null ? compression : 
+            HColumnDescriptor.DEFAULT_COMPRESSION,
           HColumnDescriptor.DEFAULT_IN_MEMORY,
           true, // blockCacheEnabled,
           HColumnDescriptor.DEFAULT_TTL,

@@ -56,9 +56,13 @@ import org.eclipse.jgit.pgm.Command;
 import org.eclipse.jgit.pgm.TextBuiltin;
 import org.eclipse.jgit.storage.hbase.HBaseDatabaseBuilder;
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 
 @Command(name = "hbase-create-schema")
 class HBaseCreateSchema extends TextBuiltin {
+	@Option(name = "--compression", required = false, metaVar = "metaVar_compression")
+	String compression;
+
 	@Argument(index = 0, required = true, metaVar = "git+hbase://")
 	String uri;
 
@@ -187,8 +191,10 @@ class HBaseCreateSchema extends TextBuiltin {
 		HColumnDescriptor col = new HColumnDescriptor(familyName);
 		col.setMaxVersions(1);
 		col.setBloomFilterType(BloomType.NONE);
-		col.setCompressionType(Algorithm.GZ);
-		col.setCompactionCompressionType(Algorithm.GZ);
+		if (compression != null) {
+			col.setCompressionType(Algorithm.valueOf(compression));
+			col.setCompactionCompressionType(Algorithm.valueOf(compression));
+		}
 		return col;
 	}
 

@@ -43,9 +43,12 @@
 
 package org.eclipse.jgit.storage.hbase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.hbase.client.Delete;
@@ -54,9 +57,10 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
+
+import org.eclipse.jgit.generated.storage.dht.proto.GitStore.ChunkMeta;
 import org.eclipse.jgit.storage.dht.AsyncCallback;
 import org.eclipse.jgit.storage.dht.ChunkKey;
-import org.eclipse.jgit.storage.dht.ChunkMeta;
 import org.eclipse.jgit.storage.dht.DhtException;
 import org.eclipse.jgit.storage.dht.PackChunk;
 import org.eclipse.jgit.storage.dht.spi.ChunkTable;
@@ -105,7 +109,7 @@ final class HBaseChunkTable implements ChunkTable {
 	}
 
 	private Collection<PackChunk.Members> parseChunks(Result[] rows)
-			throws DhtException {
+			throws IOException {
 		Collection<PackChunk.Members> chunkList;
 		chunkList = new ArrayList<PackChunk.Members>(rows.length);
 
@@ -126,7 +130,7 @@ final class HBaseChunkTable implements ChunkTable {
 			if (index != null)
 				m.setChunkIndex(index);
 			if (meta != null)
-				m.setMeta(ChunkMeta.fromBytes(key, meta));
+				m.setMeta(ChunkMeta.parseFrom(meta));
 
 			chunkList.add(m);
 		}
@@ -134,8 +138,8 @@ final class HBaseChunkTable implements ChunkTable {
 	}
 
 	@Override
-	public void getMeta(Context context, Set<ChunkKey> keys,
-			final AsyncCallback<Collection<ChunkMeta>> callback) {
+	public void getMeta(Context options, Set<ChunkKey> keys,
+			final AsyncCallback<Map<ChunkKey, ChunkMeta>> callback) {
 		final List<Get> ops = new ArrayList<Get>(keys.size());
 		for (ChunkKey key : keys) {
 			Get get = new Get(key.asBytes());
@@ -154,18 +158,18 @@ final class HBaseChunkTable implements ChunkTable {
 		});
 	}
 
-	private Collection<ChunkMeta> parseMeta(Result[] rows)
-			throws DhtException {
-		Collection<ChunkMeta> chunkList;
-		chunkList = new ArrayList<ChunkMeta>(rows.length);
+	private Map<ChunkKey, ChunkMeta> parseMeta(Result[] rows)
+			throws IOException {
+		Map<ChunkKey, ChunkMeta> chunkMap;
+		chunkMap = new HashMap<ChunkKey, ChunkMeta>(rows.length);
 		for (Result r : rows) {
 			if (r == null || r.isEmpty())
 				continue;
 			ChunkKey key = ChunkKey.fromBytes(r.getRow());
 			byte[] meta = r.getValue(colMeta, null);
-			chunkList.add(ChunkMeta.fromBytes(key, meta));
+			chunkMap.put(key, ChunkMeta.parseFrom(meta));
 		}
-		return chunkList;
+		return chunkMap;
 	}
 
 	public void put(PackChunk.Members chunk, WriteBuffer buffer)
@@ -180,7 +184,7 @@ final class HBaseChunkTable implements ChunkTable {
 			put.add(colIndex, null, chunk.getChunkIndex());
 
 		if (chunk.getMeta() != null)
-			put.add(colMeta, null, chunk.getMeta().asBytes());
+			put.add(colMeta, null, chunk.getMeta().toByteArray());
 
 		buf.write(table, put);
 	}

@@ -57,7 +57,8 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.eclipse.jgit.storage.dht.CachedPackInfo;
+
+import org.eclipse.jgit.generated.storage.dht.proto.GitStore.CachedPackInfo;
 import org.eclipse.jgit.storage.dht.CachedPackKey;
 import org.eclipse.jgit.storage.dht.ChunkInfo;
 import org.eclipse.jgit.storage.dht.ChunkKey;
@@ -65,6 +66,8 @@ import org.eclipse.jgit.storage.dht.DhtException;
 import org.eclipse.jgit.storage.dht.RepositoryKey;
 import org.eclipse.jgit.storage.dht.spi.RepositoryTable;
 import org.eclipse.jgit.storage.dht.spi.WriteBuffer;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 class HBaseRepositoryTable implements RepositoryTable {
 	private static final byte[] NONE = {};
@@ -124,16 +127,20 @@ class HBaseRepositoryTable implements RepositoryTable {
 		int estCnt = row.size();
 		List<CachedPackInfo> info = new ArrayList<CachedPackInfo>(estCnt);
 		for (KeyValue kv : row.raw())
-			info.add(CachedPackInfo.fromBytes(kv.getValue()));
+			try {
+				info.add(CachedPackInfo.parseFrom(kv.getValue()));
+			} catch (InvalidProtocolBufferException e) {
+				throw new DhtException(e);
+			}
 		return info;
 	}
 
 	public void put(RepositoryKey repo, CachedPackInfo info, WriteBuffer buffer)
 			throws DhtException {
 		HBaseBuffer buf = (HBaseBuffer) buffer;
-		CachedPackKey packName = info.getRowKey();
+		CachedPackKey packName = CachedPackKey.fromInfo(info);
 		Put put = new Put(repo.asBytes());
-		put.add(colCachedPack, packName.asBytes(), info.asBytes());
+		put.add(colCachedPack, packName.asBytes(), info.toByteArray());
 		buf.write(repository, put);
 	}
 
@@ -150,7 +157,7 @@ class HBaseRepositoryTable implements RepositoryTable {
 		HBaseBuffer buf = (HBaseBuffer) buffer;
 		ChunkKey chunk = info.getChunkKey();
 		Put put = new Put(repo.asBytes());
-		put.add(colChunkInfo, chunk.asBytes(), info.asBytes());
+		put.add(colChunkInfo, chunk.asBytes(), info.getData().toByteArray());
 		buf.write(chunkInfo, put);
 	}
 

@@ -43,6 +43,7 @@
 
 package org.eclipse.jgit.storage.hbase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.eclipse.jgit.generated.storage.dht.proto.GitStore;
 import org.eclipse.jgit.storage.dht.AsyncCallback;
 import org.eclipse.jgit.storage.dht.ChunkKey;
 import org.eclipse.jgit.storage.dht.DhtException;
@@ -101,7 +103,8 @@ final class HBaseObjectIndexTable implements ObjectIndexTable {
 		});
 	}
 
-	private Map<ObjectIndexKey, Collection<ObjectInfo>> findInfo(Result[] rows) {
+	private Map<ObjectIndexKey, Collection<ObjectInfo>> findInfo(Result[] rows)
+			throws IOException {
 		Map<ObjectIndexKey, Collection<ObjectInfo>> map;
 
 		map = new HashMap<ObjectIndexKey, Collection<ObjectInfo>>();
@@ -118,8 +121,8 @@ final class HBaseObjectIndexTable implements ObjectIndexTable {
 
 			for (KeyValue kv : r.raw()) {
 				ChunkKey k = ChunkKey.fromBytes(kv.getQualifier());
-				long time = kv.getTimestamp();
-				list.add(ObjectInfo.fromBytes(k, kv.getValue(), time));
+				list.add(new ObjectInfo(k,
+					GitStore.ObjectInfo.parseFrom(kv.getValue())));
 			}
 		}
 
@@ -131,7 +134,7 @@ final class HBaseObjectIndexTable implements ObjectIndexTable {
 		HBaseBuffer buf = (HBaseBuffer) buffer;
 		ChunkKey chunk = info.getChunkKey();
 		Put put = new Put(objId.asBytes());
-		put.add(colInfo, chunk.asBytes(), info.asBytes());
+		put.add(colInfo, chunk.asBytes(), info.getData().toByteArray());
 		buf.write(table, put);
 	}
 

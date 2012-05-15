@@ -55,8 +55,9 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
+
+import org.eclipse.jgit.generated.storage.dht.proto.GitStore.RefData;
 import org.eclipse.jgit.storage.dht.DhtException;
-import org.eclipse.jgit.storage.dht.RefData;
 import org.eclipse.jgit.storage.dht.RefKey;
 import org.eclipse.jgit.storage.dht.RepositoryKey;
 import org.eclipse.jgit.storage.dht.spi.Context;
@@ -88,7 +89,7 @@ final class HBaseRefTable implements RefTable {
 				Result row;
 				while ((row = scanner.next()) != null) {
 					RefKey key = RefKey.fromBytes(row.getRow());
-					RefData data = RefData.fromBytes(row.value());
+					RefData data = RefData.parseFrom(row.value());
 					refs.put(key, data);
 				}
 			} finally {
@@ -103,9 +104,9 @@ final class HBaseRefTable implements RefTable {
 	public boolean compareAndPut(RefKey refKey, RefData oldData, RefData newData)
 			throws DhtException, TimeoutException {
 		byte[] row = refKey.asBytes();
-		byte[] old = oldData != RefData.NONE ? oldData.asBytes() : null;
+		byte[] old = oldData != null ? oldData.toByteArray() : null;
 		Put put = new Put(row);
-		put.add(colTarget, QUAL, newData.asBytes());
+		put.add(colTarget, QUAL, newData.toByteArray());
 		try {
 			return table.checkAndPut(row, colTarget, QUAL, old, put);
 		} catch (IOException err) {
@@ -116,7 +117,7 @@ final class HBaseRefTable implements RefTable {
 	public boolean compareAndRemove(RefKey refKey, RefData oldData)
 			throws DhtException, TimeoutException {
 		byte[] row = refKey.asBytes();
-		byte[] old = oldData.asBytes();
+		byte[] old = oldData.toByteArray();
 		Delete del = new Delete(row);
 		try {
 			return table.checkAndDelete(row, colTarget, QUAL, old, del);

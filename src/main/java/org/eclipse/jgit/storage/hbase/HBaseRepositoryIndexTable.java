@@ -46,6 +46,7 @@ package org.eclipse.jgit.storage.hbase;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
@@ -117,5 +118,22 @@ class HBaseRepositoryIndexTable implements RepositoryIndexTable {
 
 		if (!ok)
 			throw new DhtException("repository exists " + name.asString());
+	}
+
+	@Override
+	public void remove(RepositoryName name, RepositoryKey key)
+			throws DhtException, TimeoutException {
+		try {
+			Get get = new Get(name.asBytes());
+			get.addColumn(colId, QUAL);
+			if (!repositoryIndex.exists(get))
+				throw new DhtException("repository " + name.asString() +
+					" does not exist");
+			Delete delete = new Delete(key.asBytes());
+			delete.deleteColumn(colName, name.asBytes());
+			repository.delete(delete);
+		} catch (IOException e) {
+			throw new DhtException(e);
+		}
 	}
 }

@@ -1,32 +1,30 @@
 org.eclipse.jgit.storage.hbase
 ------------------------------
 
-This package is a trivial implementation of the
-org.eclipse.jgit.storage.dht.spi interface, binding
-JGit's generic DHT storage onto the Apache HBase
-NoSQL database.
+This package is an implementation of the JGit storage.dht.spi interface,
+binding JGit's generic DHT storage to Apache HBase. This work is based on
+Shawn Pearce's jgit_hbase prototype.
 
-
-Download HBsae 0.90.0 and unpack the distribution.  To experiment with
+Download HBase 0.94.0 and unpack the distribution.  To experiment with
 a single node cluster, start the node locally in the background:
 
-  hbase-0.90.0/bin/start-hbase.sh
+  hbase-0.94.0/bin/start-hbase.sh
 
 To later stop this single node cluster:
 
-  hbase-0.90.0/bin/stop-hbase.sh
-
+  hbase-0.94.0/bin/stop-hbase.sh
 
 Compile this package, you may need JGit first:
 
   (cd ../jgit && mvn clean install)
   mvn clean package
 
+This code has been tested with JGit 1.1.0. [ Currently 1.1.0-SNAPSHOT
+somewhere shy of the release point, working on it. -- apurtell ]
 
-Initialize the HBase schema (do this once per cluster):
+Initialize the HBase schema once per cluster:
 
-  java -jar target/jgit-hbase.jar \
-    hbase-create-schema \
+  java -jar target/jgit-hbase.jar hbase-create-schema \
     git+hbase://localhost/test
 
 The hostname ("localhost") denotes the ZooKeeper nodes to contact to
@@ -37,23 +35,19 @@ The schema prefix may not itself contain '/'.
 
 Create a repository:
 
-  java -jar target/jgit-hbase.jar \
-    hbase-init \
+  java -jar target/jgit-hbase.jar hbase-init \
     git+hbase://localhost/test/jgit.git
 
 A git+hbase repository URI has the obvious hostname component
 ("localhost"), followed by the schema prefix ("test"), and the
 remainder of the URI is the repository name.
 
-
 Launch a Git daemon, which needs at least 800M to handle the linux-2.6
 repository.  Currently JGit's DHT implementation holds onto the entire
 pack during receive, to implement delta resolution efficiently.
 
-  java -Xmx800m -jar target/jgit-hbase.jar \
-    hbase-daemon \
-    --enable receive-pack
-    git+hbase://localhost/test
+  java -Xmx800m -jar target/jgit-hbase.jar hbase-daemon \
+    --enable receive-pack git+hbase://localhost/test
 
 Push to it:
 

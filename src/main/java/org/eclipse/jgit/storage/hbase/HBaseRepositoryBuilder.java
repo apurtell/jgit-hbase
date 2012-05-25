@@ -84,6 +84,8 @@ public class HBaseRepositoryBuilder
 			path = path.substring(1);
 
 		int endPrefix = path.indexOf('/');
+		if (endPrefix < 0)
+			throw new IllegalArgumentException();
 		setSchemaPrefix(path.substring(0, endPrefix));
 		setRepositoryName(path.substring(endPrefix + 1));
 		return self();

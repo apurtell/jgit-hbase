@@ -50,7 +50,7 @@
   <groupId>org.eclipse.jgit</groupId>
   <artifactId>org.eclipse.jgit.storage.hbase</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
 
   <name>JGit - HBase Storage</name>
 
@@ -63,8 +63,8 @@
 
     <junit-version>3.8.2</junit-version>
     <args4j-version>2.0.12</args4j-version>
-    <jgit-version>0.12.0-SNAPSHOT</jgit-version>
-    <hbase-version>0.90.0</hbase-version>
+    <jgit-version>1.1.0-SNAPSHOT</jgit-version>
+    <hbase-version>0.94.0</hbase-version>
   </properties>
 
   <build>

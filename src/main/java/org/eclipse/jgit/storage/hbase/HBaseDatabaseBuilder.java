@@ -48,6 +48,7 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.eclipse.jgit.storage.dht.DhtException;
 import org.eclipse.jgit.storage.dht.spi.util.ExecutorTools;
 import org.eclipse.jgit.transport.URIish;
@@ -126,7 +127,7 @@ public class HBaseDatabaseBuilder {
 
 	public HBaseDatabaseBuilder setup() {
 		if (configuration == null) {
-			configuration = new Configuration();
+			configuration = HBaseConfiguration.create();
 			if (getHosts() != null){
 				configuration.set("hbase.zookeeper.quorum", getHosts());
 				configuration.setInt("hbase.zookeeper.property.clientPort", 2181);

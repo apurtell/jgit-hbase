@@ -64,8 +64,16 @@
     <junit-version>3.8.2</junit-version>
     <args4j-version>2.0.12</args4j-version>
     <jgit-version>1.1.0-SNAPSHOT</jgit-version>
-    <hbase-version>0.94.0</hbase-version>
+    <hadoop-version>1.0.3</hadoop-version>
+    <hbase-version>0.92.1</hbase-version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>apache release</id>
+      <url>https://repository.apache.org/content/repositories/releases/</url>
+    </repository>
+  </repositories>
 
   <build>
     <pluginManagement>
@@ -236,6 +244,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-core</artifactId>
+        <version>${hadoop-version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.hbase</groupId>
         <artifactId>hbase</artifactId>
         <version>${hbase-version}</version>
@@ -263,6 +277,137 @@
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit.pgm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-core</artifactId>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>commons-cli</artifactId>
+      		<groupId>commons-cli</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>commons-codec</artifactId>
+      		<groupId>commons-codec</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>commons-httpclient</artifactId>
+      		<groupId>commons-httpclient</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>commons-lang</artifactId>
+      		<groupId>commons-lang</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>avro</artifactId>
+      		<groupId>org.apache.hadoop</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jruby-complete</artifactId>
+      		<groupId>org.jruby</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jetty</artifactId>
+      		<groupId>org.mortbay.jetty</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jetty-util</artifactId>
+      		<groupId>org.mortbay.jetty</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jsp-2.1</artifactId>
+      		<groupId>org.mortbay.jetty</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jsp-api-2.1</artifactId>
+      		<groupId>org.mortbay.jetty</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>servlet-api-2.5</artifactId>
+      		<groupId>org.mortbay.jetty</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>slf4j-api</artifactId>
+      		<groupId>org.slf4j</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>slf4j-log4j12</artifactId>
+      		<groupId>org.slf4j</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jasper-compiler</artifactId>
+      		<groupId>tomcat</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jasper-runtime</artifactId>
+      		<groupId>tomcat</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>protobuf-java</artifactId>
+      		<groupId>com.google.protobuf</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jersey-core</artifactId>
+      		<groupId>com.sun.jersey</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jersey-json</artifactId>
+      		<groupId>com.sun.jersey</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jersey-server</artifactId>
+      		<groupId>com.sun.jersey</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jsr311-api</artifactId>
+      		<groupId>javax.ws.rs</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jaxb-api</artifactId>
+      		<groupId>javax.xml.bind</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>stax-api</artifactId>
+      		<groupId>stax</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jline</artifactId>
+      		<groupId>jline</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jets3t</artifactId>
+      		<groupId>net.java.dev.jets3t</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>hsqldb</artifactId>
+      		<groupId>hsqldb</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>xmlenc</artifactId>
+      		<groupId>xmlenc</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>commons-el</artifactId>
+      		<groupId>commons-el</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>kfs</artifactId>
+      		<groupId>net.sf.kosmosfs</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>core</artifactId>
+      		<groupId>org.eclipse.jdt</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>commons-net</artifactId>
+      		<groupId>commons-net</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>oro</artifactId>
+      		<groupId>oro</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

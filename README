@@ -5,22 +5,21 @@ This package is an implementation of the JGit storage.dht.spi interface,
 binding JGit's generic DHT storage to Apache HBase. This work is based on
 Shawn Pearce's jgit_hbase prototype.
 
-Download HBase 0.94.0 and unpack the distribution.  To experiment with
+Download HBase 0.92.1 and unpack the distribution.  To experiment with
 a single node cluster, start the node locally in the background:
 
-  hbase-0.94.0/bin/start-hbase.sh
+  hbase-0.92.1/bin/start-hbase.sh
 
 To later stop this single node cluster:
 
-  hbase-0.94.0/bin/stop-hbase.sh
+  hbase-0.92.1/bin/stop-hbase.sh
 
 Compile this package, you may need JGit first:
 
   (cd ../jgit && mvn clean install)
   mvn clean package
 
-This code has been tested with JGit 1.1.0. [ Currently 1.1.0-SNAPSHOT
-somewhere shy of the release point, working on it. -- apurtell ]
+This has been tested with JGit 1.3.0.201202151440-r.
 
 Initialize the HBase schema once per cluster:
 
